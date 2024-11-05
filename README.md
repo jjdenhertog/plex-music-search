@@ -1,10 +1,110 @@
+
 # Plex Music Search
 
-This library can be used to search for songs in a Plex library. Using the artist, song title and album name it tries to match songs. It leverages the local search and the discovery search. You can use a custom configuration to tweak how songs could be matched.
+[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
 
-The goal of this lirbary is to match as much local Plex songs as possible before resorting to Tidal songs.
+The `plex-music-search` library provides tools for searching and analyzing tracks within a Plex music library, building on the functionality of [music-search](https://github.com/jjdenhertog/music-search) with Plex-specific configurations. It can handle track searches efficiently and offers configuration options tailored to Plex’s system.
 
-## Alternative Artists and Titles
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Default Settings](#default-settings)
+- [Configuration Options](#configuration-options)
+- [Getting Plex URI and Token](#getting-plex-uri-and-token)
+- [Examples](#examples)
+- [Support](#support)
 
-While searching for songs you can provide alternative titles or artists. The library will first search with the original data and then resort to the alternative title. This approach can be very help while searching for classical songs.
+## Installation
 
+Install the `plex-music-search` library with npm:
+
+```bash
+npm install @jjdenhertog/plex-music-search
+```
+
+## Usage
+
+The library provides a straightforward API to search tracks in your Plex library. To get started, you’ll need the URI and token for your Plex server.
+
+```typescript
+import PlexMusicSearch from '@jjdenhertog/plex-music-search';
+
+const searchItems = [
+    { id: "track1", title: "Shape of You", album: "Divide", artists: ["Ed Sheeran"] },
+    // More items...
+];
+
+const plexMusicSearch = new PlexMusicSearch({
+    uri: "https://your-plex-server-url",
+    token: "your-plex-auth-token",
+});
+
+// Search for multiple tracks
+const searchResult = await plexMusicSearch.search(searchItems);
+console.log(searchResult);
+```
+
+## Default Settings
+
+The `plex-music-search` library has a set of default search settings, allowing you to use it without additional configuration:
+
+- **URI**: The base URL of your Plex server.
+- **Token**: Your Plex authentication token.
+
+These settings ensure you can start searching with minimal setup. Advanced configurations are available if needed.
+
+## Configuration Options
+
+The `plex-music-search` library supports several configuration options to customize the search behavior. Here’s a quick look at the main options:
+
+- **uri**: URL of the Plex server.
+- **token**: Plex authentication token.
+
+Example:
+
+```typescript
+const plexMusicSearch = new PlexMusicSearch({
+    uri: "https://your-plex-server-url",
+    token: "your-plex-auth-token"
+});
+```
+
+## Getting Plex URI and Token
+
+To use `plex-music-search`, you’ll need your Plex server's URI and a token for authentication:
+
+1. **URI**: This is the base URL of your Plex server. You can usually find this in your Plex server settings, or by accessing Plex Web and copying the URL from your browser.
+
+2. **Token**: The Plex token is required to authenticate API requests. To find your token:
+   - Open Plex Web and log in.
+   - Right-click on the page and select "Inspect" or "View Page Source."
+   - Look for the token in the source code (often found after the term "X-Plex-Token").
+
+## Faster searching
+
+The default approach search quite thoroughly through your but as a result can be extremely time-consuming. By default it uses three search approaches. By limiting to only one search approach you will decrease the time searching tremendously.
+
+```typescript
+const searchItems = [
+    { id: "1234", title: "Shape of You", album: "Divide", artists: ["Ed Sheeran"] },
+    // More items...
+];
+
+const plexMusicSearch = new PlexMusicSearch({
+    uri: "https://your-plex-server-url",
+    token: "your-plex-auth-token",
+    searchApproaches: [{ id: 'fast', filtered: true, trimmed: false}]
+});
+
+// Search for multiple tracks
+const searchResult = await plexMusicSearch.search(searchItems);
+
+```
+
+## Support
+
+If this project helps you, consider supporting me:
+
+[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
+
+Your support helps improve and maintain this library.
