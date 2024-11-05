@@ -1,8 +1,12 @@
 {
     "name": "@jjdenhertog/plex-music-search",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Library to find tracks in your Plex Library",
-    "keywords": [ "plex", "music", "search" ],
+    "keywords": [
+        "plex",
+        "music",
+        "search"
+    ],
     "homepage": "https://github.com/jjdenhertog/plex-music-search",
     "main": "dist/index.js",
     "license": "MIT",
