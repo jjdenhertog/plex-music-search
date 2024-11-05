@@ -3,7 +3,7 @@
 
 [![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
 
-The `plex-music-search` library provides tools for searching and analyzing tracks within a Plex music library, building on the functionality of [music-search](https://github.com/jjdenhertog/music-search) with Plex-specific configurations. It can handle track searches efficiently and offers configuration options tailored to Plex’s system.
+The `plex-music-search` library provides tools for searching tracks within a Plex music library, building on the functionality of [music-search](https://github.com/jjdenhertog/music-search) with Plex-specific configurations. It can handle track searches efficiently by caching repeated search queries.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -11,7 +11,6 @@ The `plex-music-search` library provides tools for searching and analyzing track
 - [Default Settings](#default-settings)
 - [Configuration Options](#configuration-options)
 - [Getting Plex URI and Token](#getting-plex-uri-and-token)
-- [Examples](#examples)
 - [Support](#support)
 
 ## Installation
