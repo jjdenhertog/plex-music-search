@@ -43,6 +43,23 @@ const searchResult = await plexMusicSearch.search(searchItems);
 console.log(searchResult);
 ```
 
+### What is with the ID while searching?
+
+You might notice that the search query must contain an ID
+```typescript
+const searchItems = [
+    { id: "track1", title: "Shape of You", album: "Divide", artists: ["Ed Sheeran"] },
+    // More items...
+];
+```
+
+Most of the times when you're searching for a track you are doing it to match one library with the other. For example matching Spotify with Plex. The result after searching will contain the original search query including the id and the results. The results are all the tracks matching with the search query. With this approach you can trace back the results more easily.
+
+If you do not need the id for this purpose, you can simply leave it empty: 
+```typescript
+{ id: "", title: "Shape of You", album: "Divide", artists: ["Ed Sheeran"] }
+```
+
 ## Default Settings
 
 The `plex-music-search` library has a set of default search settings, allowing you to use it without additional configuration:
