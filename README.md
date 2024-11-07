@@ -1,14 +1,11 @@
 
 # Plex Music Search
 
-[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
-
-The `plex-music-search` library provides tools for searching tracks within a Plex music library, building on the functionality of [music-search](https://github.com/jjdenhertog/music-search) with Plex-specific configurations. It can handle track searches efficiently by caching repeated search queries.
+The `plex-music-search` library can be used to search for tracks in a Plex music library, building on the functionality of [music-search](https://github.com/jjdenhertog/music-search) with Plex-specific configurations. 
 
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Default Settings](#default-settings)
 - [Configuration Options](#configuration-options)
 - [Getting Plex URI and Token](#getting-plex-uri-and-token)
 - [Support](#support)
@@ -60,15 +57,6 @@ If you do not need the id for this purpose, you can simply leave it empty:
 { id: "", title: "Shape of You", album: "Divide", artists: ["Ed Sheeran"] }
 ```
 
-## Default Settings
-
-The `plex-music-search` library has a set of default search settings, allowing you to use it without additional configuration:
-
-- **URI**: The base URL of your Plex server.
-- **Token**: Your Plex authentication token.
-
-These settings ensure you can start searching with minimal setup. Advanced configurations are available if needed.
-
 ## Configuration Options
 
 The `plex-music-search` library supports several configuration options to customize the search behavior. Here’s a quick look at the main options:
@@ -98,7 +86,7 @@ To use `plex-music-search`, you’ll need your Plex server's URI and a token for
 
 ## Faster searching
 
-The default approach search quite thoroughly through your but as a result can be extremely time-consuming. By default it uses three search approaches. By limiting to only one search approach you will decrease the time searching tremendously.
+The default approach searches quite thoroughly through your library but as a result it can be time-consuming. By default it uses three search approaches. By limiting to only one search approach you will decrease the time searching tremendously.
 
 ```typescript
 const searchItems = [
@@ -117,10 +105,10 @@ const searchResult = await plexMusicSearch.search(searchItems);
 
 ```
 
-## Support
+## Support This Open-Source Project ❤️
 
-If this project helps you, consider supporting me:
+If you appreciate my work, consider starring this repository or making a donation to support ongoing development. Your support means the world to me—thank you!
 
 [![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
 
-Your support helps improve and maintain this library.
+Are you a developer and have some free time on your hand? It would be great if someone can help me maintain and improve this library.
