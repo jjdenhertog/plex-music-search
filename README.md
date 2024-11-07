@@ -111,4 +111,4 @@ If you appreciate my work, consider starring this repository or making a donatio
 
 [![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jjdenhertog)
 
-Are you a developer and have some free time on your hand? It would be great if someone can help me maintain and improve this library.
+Are you a developer and have some free time on your hand? It would be great if you can help me maintain and improve this library.
