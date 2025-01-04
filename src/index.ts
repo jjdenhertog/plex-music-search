@@ -1,11 +1,12 @@
 import MusicSearch, { filterOutWords, removeFeaturing, Track } from "@jjdenhertog/music-search";
 import getAlbumTracks from "./actions/getAlbumTracks";
 import { getMetadata } from "./actions/getMetadata";
+import { Metadata } from "./types";
 import { PlexMusicSearchApproach } from "./types/PlexMusicSearchApproach";
 import { PlexMusicSearchConfig } from "./types/PlexMusicSearchConfig";
 import { PlexMusicSearchTrack } from "./types/PlexMusicSearchTrack";
 import { PlexTrack } from "./types/PlexTrack";
-import { SearchResponse } from "./types/SearchResponse";
+import { SearchQuery, SearchResponse } from "./types/SearchResponse";
 import hubSearchToPlexTrack from "./utils/searching/hubSearchToPlexTrack";
 import { searchForAlbum } from "./utils/searching/searchForAlbum";
 import { searchForAlbumTracks } from "./utils/searching/searchForAlbumTracks";
@@ -46,7 +47,6 @@ export class PlexMusicSearch {
             result.push(trackResult)
         }
 
-
         return result
     }
 
@@ -62,12 +62,14 @@ export class PlexMusicSearch {
             ]
         } = this._config
 
+        // Reset cache
+        this._cache = []
+
         // Initialize music search with config
         const musicSearch = MusicSearch.getInstance()
         musicSearch.config = this._config;
 
         return this._newTrackSearch(approaches, track, true)
-
     }
 
     public async searchAlbum(tracks: PlexMusicSearchTrack[]): Promise<SearchResponse[]> {
@@ -113,7 +115,7 @@ export class PlexMusicSearch {
                         const result = getMusicSearchResult(item, searchResultToTracks(albumTracks))
                         const plexTracks = result
                             .map(item => albumTracks
-                                .find(track => track.guid == item.id))
+                                .find(track => track.id == item.id))
                             .filter(item => !!item)
                             .map(item => hubSearchToPlexTrack(item))
 
@@ -127,7 +129,6 @@ export class PlexMusicSearch {
                 }
                 // return foundAlbums;
             } catch (_e) {
-
             }
         }
 
@@ -135,7 +136,9 @@ export class PlexMusicSearch {
 
     }
 
-
+    public getMetaData(key: string): Promise<Metadata[]> {
+        return getMetadata(this._config.uri, this._config.token, key);
+    }
 
     public async getById(key: string): Promise<PlexTrack> {
         const metaData = await getMetadata(this._config.uri, this._config.token, key);
@@ -174,18 +177,21 @@ export class PlexMusicSearch {
 
         const { id, artists, title, album } = searchTrack;
 
+        let queries: SearchQuery[] = []
+
         for (let j = 0; j < artists.length; j++) {
             const artist = artists[j];
             try {
                 const result = await this._findTrack(approaches, { id, artist, title, album }, includeMatching);
+                queries = queries.concat(result.queries)
+
                 if (result && result.result.length > 0)
                     return result;
             } catch (_e) {
-
             }
         }
 
-        return { id, artist: artists[0], title, album: album || "", result: [] }
+        return { id, artist: artists[0], title, album: album || "", queries, result: [] }
     }
 
     private async _findTrack(approaches: PlexMusicSearchApproach[], find: Track, includeMatching: boolean) {
@@ -193,12 +199,13 @@ export class PlexMusicSearch {
 
         const { id, artist, title, album = '' } = find;
 
+        const queries: SearchQuery[] = []
         const musicSearch = MusicSearch.getInstance();
 
         ///////////////////////////////////////////
         // Perform a search on the plex library
         ///////////////////////////////////////////
-        const performSearch = async (artist: string, title: string, album: string, searchAlbumTracks: boolean = false) => {
+        const performSearch = async (approach: string, artist: string, title: string, album: string, searchAlbumTracks: boolean = false) => {
             const cacheId = `${searchAlbumTracks ? 'album-' : ''}${artist}-${title}-${album}`
             const foundCache = this._cache.find(item => item.id == cacheId)
             if (foundCache)
@@ -225,30 +232,33 @@ export class PlexMusicSearch {
 
             this._cache.push({ id: cacheId, result: plexTracks })
 
+            const approachId = searchAlbumTracks ? `${approach}-album` : approach
+            queries.push({ approach: approachId, artist, title, album })
+
             return plexTracks;
         }
 
         ///////////////////////////////////////////
         // Perform searches
         ///////////////////////////////////////////
-        try {
 
-            let searchApproachIndex = 0;
-            while (approaches[searchApproachIndex]) {
-                const approach = approaches[searchApproachIndex]
-                if (searchResult.length > 0) {
-                    searchApproachIndex++;
-                    continue;
-                }
+        let searchApproachIndex = 0;
+        while (approaches[searchApproachIndex]) {
+            const approach = approaches[searchApproachIndex]
+            if (searchResult.length > 0) {
+                searchApproachIndex++;
+                continue;
+            }
 
-                const { trim, filtered, ignoreQuotes: removeQuotes } = approach
+            const { id: approachId, trim, filtered, ignoreQuotes: removeQuotes } = approach
+            const searchArtist = filterOutWords(artist.toLowerCase(), filtered, trim, removeQuotes)
+            const searchAlbum = filterOutWords(album.toLowerCase(), filtered, trim, removeQuotes)
+            const searchTrack = filterOutWords(title.toLowerCase(), filtered, trim, removeQuotes)
 
-                const searchArtist = filterOutWords(artist.toLowerCase(), filtered, trim, removeQuotes)
-                const searchAlbum = filterOutWords(album.toLowerCase(), filtered, trim, removeQuotes)
-                const searchTrack = filterOutWords(title.toLowerCase(), filtered, trim, removeQuotes)
+            try {
 
                 // Find and cache result
-                searchResult = await performSearch(searchArtist, searchTrack, searchAlbum)
+                searchResult = await performSearch(approachId, searchArtist, searchTrack, searchAlbum)
 
                 ////////////////////////////////////////
                 // Rewrite "&"" to "and"
@@ -256,7 +266,7 @@ export class PlexMusicSearch {
                 if (searchResult.length == 0 && (searchArtist.indexOf("&") || searchTrack.indexOf("&") > -1)) {
                     const altSearchArtist = searchArtist.split('&').join('and');
                     const altSearchTrack = searchTrack.split('&').join('and');
-                    searchResult = await performSearch(altSearchArtist, altSearchTrack, searchAlbum)
+                    searchResult = await performSearch(approachId, altSearchArtist, altSearchTrack, searchAlbum)
                 }
 
                 ////////////////////////////////////////
@@ -264,22 +274,25 @@ export class PlexMusicSearch {
                 // Plex has difficulties finding tracks where the album name is the same as the track
                 ////////////////////////////////////////
                 if (searchResult.length == 0)
-                    searchResult = await performSearch(searchArtist, searchTrack, searchAlbum, true)
+                    searchResult = await performSearch(approachId, searchArtist, searchTrack, searchAlbum, true)
 
-                searchApproachIndex++;
+            } catch (_e) {
+                // This can happen, with hickups.
+                // the invalid urls are also shown in the console
             }
 
-            return {
-                id,
-                artist,
-                album,
-                title,
-                result: searchResult
-            }
-
-        } catch (_e) {
-            throw new Error("Something went wrong while searching");
+            searchApproachIndex++;
         }
+
+        return {
+            id,
+            artist,
+            album,
+            title,
+            queries,
+            result: searchResult
+        }
+
 
     }
 }

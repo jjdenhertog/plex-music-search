@@ -5,5 +5,13 @@ export type SearchResponse = {
     artist: string;
     title: string;
     album: string;
+    queries?: SearchQuery[]
     result: PlexTrack[];
 };
+
+export type SearchQuery = {
+    approach: string
+    artist: string
+    title: string
+    album: string
+}

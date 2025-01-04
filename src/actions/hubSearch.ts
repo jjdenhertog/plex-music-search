@@ -9,6 +9,15 @@ import getAPIUrl from "../utils/getAPIUrl";
 
 export default function hubSearch(uri: string, token: string, query: string, limit: number = 5) {
     return new Promise<HubSearchResult[]>((resolve, reject) => {
+
+        // Fix forbidden characters
+        const forbiddenCharacters = ['(', ')']
+
+        for (let i = 0; i < forbiddenCharacters.length; i++) {
+            const element = forbiddenCharacters[i];
+            query = query.split(element).join('')
+        }
+
         const url = getAPIUrl(uri, `/hubs/search?query=${fixedEncodeURIComponent(query.trim())}&limit=${limit}`);
         AxiosRequest.get<HubSearchResponse>(url, token)
             .then((result) => {
@@ -73,6 +82,7 @@ export default function hubSearch(uri: string, token: string, query: string, lim
 
             })
             .catch((_error: unknown) => {
+                console.error(`Plex API Request failed:\n${url}`)
                 reject("Could not connect to server");
             })
     })

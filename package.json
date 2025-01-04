@@ -1,6 +1,6 @@
 {
     "name": "@jjdenhertog/plex-music-search",
-    "version": "1.0.2",
+    "version": "1.0.22",
     "description": "Library to find tracks in your Plex Library",
     "keywords": [
         "plex",
@@ -18,7 +18,7 @@
         "npm": ">=10.0.0"
     },
     "dependencies": {
-        "@jjdenhertog/music-search": "^1.0.6",
+        "@jjdenhertog/music-search": "^1.0.7",
         "axios": "^1.4.0",
         "qs": "^6.12.0",
         "string-similarity-js": "^2.1.4"
