@@ -27,9 +27,9 @@ export class PlexMusicSearch {
         const {
             searchApproaches: approaches = [
                 { id: 'normal', filtered: false, trim: false },
-                { id: 'filtered', filtered: true, trim: false },
+                { id: 'filtered', filtered: true, trim: false, removeQuotes: true },
                 { id: 'trimmed', filtered: false, trim: true },
-                { id: 'filtered_trimmed', filtered: true, trim: true }
+                { id: 'filtered_trimmed', filtered: true, trim: true, removeQuotes: true }
             ]
         } = this._config
 
@@ -56,9 +56,9 @@ export class PlexMusicSearch {
         const {
             searchApproaches: approaches = [
                 { id: 'normal', filtered: false, trim: false },
-                { id: 'filtered', filtered: true, trim: false },
+                { id: 'filtered', filtered: true, trim: false, removeQuotes: true },
                 { id: 'trimmed', filtered: false, trim: true },
-                { id: 'filtered_trimmed', filtered: true, trim: true }
+                { id: 'filtered_trimmed', filtered: true, trim: true, removeQuotes: true }
             ]
         } = this._config
 
